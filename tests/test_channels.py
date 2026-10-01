@@ -64,15 +64,15 @@ class TestOpenCLISiteChannels:
         status, msg = ch.check()
         assert status == "warn"
         assert ch.active_backend is None
-        assert "桥接已连接" in msg
-        assert "登录态和实际命令未实时验证" in msg
+        assert "bridge is connected" in msg
+        assert "login and real commands are not live-verified" in msg
         assert "facebook.com" in msg
 
         instagram = InstagramChannel()
         status, msg = instagram.check()
         assert status == "warn"
         assert instagram.active_backend is None
-        assert "桥接已连接" in msg
+        assert "bridge is connected" in msg
         assert "instagram.com" in msg
 
     def test_opencli_missing_reports_off(self, monkeypatch):
@@ -92,22 +92,22 @@ class TestOpenCLISiteChannels:
             "agent_reach.backends.opencli_status",
             lambda: OpenCLIStatus(
                 installed=True,
-                hint="OpenCLI 已安装，但 Chrome 扩展未安装。",
+                hint="OpenCLI is installed, but the Chrome extension is not.",
             ),
         )
         ch = InstagramChannel()
         status, msg = ch.check()
         assert status == "warn"
         assert ch.active_backend is None
-        assert "Chrome 扩展" in msg
+        assert "Chrome extension" in msg
 
 
 class TestRedditChannel:
-    """多后端：OpenCLI > rdt-cli，没有零配置路径。"""
+    """Multi-backend: OpenCLI > rdt-cli, no zero-config path."""
 
     @staticmethod
     def _isolate(monkeypatch, opencli=None):
-        """隔离 OpenCLI 候选（None = 未安装），聚焦 rdt-cli 路径。"""
+        """Isolate the OpenCLI candidate (None = not installed) to focus on rdt-cli."""
         from agent_reach.channels.reddit import RedditChannel
         monkeypatch.setattr(RedditChannel, "_check_opencli", lambda self: opencli)
 
@@ -117,13 +117,13 @@ class TestRedditChannel:
         from agent_reach.channels.reddit import RedditChannel
         status, msg = RedditChannel().check()
         assert status == "off"
-        # 诚实口径：明说没有零配置路径，推荐 OpenCLI + rdt git 源
-        assert "零配置" in msg
+        # Be honest: say there is no zero-config path; recommend OpenCLI + the rdt git source
+        assert "zero-config" in msg
         assert "opencli" in msg
         assert "git+https://github.com/public-clis/rdt-cli.git" in msg
 
     def test_opencli_ready_wins(self, monkeypatch):
-        self._isolate(monkeypatch, opencli=("ok", "OpenCLI 可用（复用浏览器登录态）"))
+        self._isolate(monkeypatch, opencli=("ok", "OpenCLI available (reuses browser session)"))
         monkeypatch.setattr(shutil, "which", lambda _: None)
         from agent_reach.channels.reddit import RedditChannel
         ch = RedditChannel()
@@ -160,7 +160,7 @@ class TestRedditChannel:
         ch = RedditChannel()
         status, msg = ch.check()
         assert status == "warn"
-        assert "未实时验证" in msg
+        assert "not live-verified" in msg
         assert ch.active_backend is None
 
     def test_reports_warn_when_cookie_is_missing(self, monkeypatch):
@@ -185,7 +185,7 @@ class TestRedditChannel:
 
 class TestYouTubeChannel:
     def test_reports_error_with_reinstall_hint_when_broken(self, monkeypatch):
-        """yt-dlp which 命中但 exec 抛 FileNotFoundError → error + 重装处方。"""
+        """yt-dlp found by which() but exec raises FileNotFoundError → error + reinstall prescription."""
         monkeypatch.setattr(shutil, "which", lambda _: "/usr/local/bin/yt-dlp")
 
         def fake_run(cmd, **kwargs):
@@ -196,14 +196,14 @@ class TestYouTubeChannel:
         ch = YouTubeChannel()
         status, msg = ch.check()
         assert status == "error"
-        assert "无法执行" in msg
+        assert "cannot run" in msg
         assert "uv tool install --force yt-dlp" in msg
         assert ch.active_backend is None
 
 
 class TestGitHubChannel:
     def test_reports_error_with_reinstall_hint_when_broken(self, monkeypatch):
-        """gh --version 断链时给出二进制重装处方。"""
+        """A broken gh --version yields a binary reinstall prescription."""
         monkeypatch.setattr(shutil, "which", lambda _: "/usr/local/bin/gh")
 
         def fake_run(cmd, **kwargs):
@@ -215,7 +215,7 @@ class TestGitHubChannel:
         ch = GitHubChannel()
         status, msg = ch.check()
         assert status == "error"
-        assert "无法执行" in msg
+        assert "cannot run" in msg
         assert "brew reinstall gh" in msg
         assert ch.active_backend is None
 
@@ -237,7 +237,7 @@ class TestGitHubChannel:
         ch = GitHubChannel()
         status, msg = ch.check()
         assert status == "warn"
-        assert "显式认证配置" in msg
+        assert "explicit auth config" in msg
         assert "configured-secret" not in msg
         assert ch.active_backend is None
 
@@ -289,7 +289,7 @@ class TestGitHubChannel:
         status, message = GitHubChannel().check()
 
         assert status == "warn"
-        assert "显式认证配置" in message
+        assert "explicit auth config" in message
         assert "alice" not in message
         assert "super-secret-token" not in message
 
@@ -324,7 +324,7 @@ class TestGitHubChannel:
         status, message = channel.check()
 
         assert status == "warn"
-        assert "无法安全确认" in message
+        assert "cannot be safely confirmed" in message
         assert "do-not-read" not in message
         assert channel.active_backend is None
 
@@ -383,7 +383,7 @@ class TestLinkedInChannel:
         status, message = LinkedInChannel().check()
 
         assert status == "warn"
-        assert "uvx 未安装" in message
+        assert "uvx is not installed" in message
         assert "docs.astral.sh/uv/getting-started/installation" in message
 
     def test_mcporter_is_never_executed(
@@ -442,7 +442,7 @@ class TestLinkedInChannel:
         ch = LinkedInChannel()
         status, msg = ch.check()
         assert status == "warn"
-        assert "未启动" in msg
+        assert "does not start" in msg
         assert ch.active_backend is None
 
     def test_config_metadata_containing_linkedin_is_not_a_backend(
@@ -534,7 +534,7 @@ class TestExaSearchChannel:
         ch = ExaSearchChannel()
         status, msg = ch.check()
         assert status == "warn"
-        assert "未启动" in msg
+        assert "does not start" in msg
         assert ch.active_backend is None
 
     def test_config_metadata_containing_exa_is_not_a_backend(
