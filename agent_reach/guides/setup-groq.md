@@ -1,47 +1,45 @@
-# Groq Whisper 配置指南
+# Groq Whisper Setup Guide
 
-## 功能说明
-当 YouTube/Bilibili 视频没有字幕时，用 Groq 的 Whisper API 进行语音转文字。Groq 提供免费额度。
+## What it does
+When a video or podcast has no subtitles, Groq's Whisper API transcribes the audio. Groq offers a free tier.
 
-## Agent 可自动完成的步骤
+## Steps the Agent can do automatically
 
-1. 检查是否已配置：
+1. Check whether it is already configured:
 ```bash
-agent-reach doctor | grep -i "groq\|whisper"
+agent-reach doctor | grep -i "transcribe"
 ```
 
-2. 如果用户提供了 key，写入配置：
-```python
-from agent_reach.config import Config
-c = Config()
-c.set("groq_api_key", "用户提供的KEY")
+2. When the user provides a key, save it through the hidden prompt (never put the key in command arguments):
+```bash
+agent-reach configure groq-key
 ```
 
-3. 测试（可选）：
+3. Test (optional), reading the key from the environment rather than typing it into the command:
 ```bash
 curl -s https://api.groq.com/openai/v1/models \
-  -H "Authorization: Bearer 用户提供的KEY" \
+  -H "Authorization: Bearer $GROQ_API_KEY" \
   -o /dev/null -w "%{http_code}"
 ```
-返回 200 = 可用
+200 = working
 
-## 需要用户手动做的步骤
+## Steps the user must do manually
 
-请告诉用户：
+Tell the user:
 
-> 视频语音转文字需要一个 Groq API Key（免费）。
+> Speech-to-text for videos needs a Groq API key (free).
 >
-> 步骤：
-> 1. 打开 https://console.groq.com
-> 2. 用 Google 账号或邮箱注册
-> 3. 点击左侧 "API Keys"
-> 4. 点击 "Create API Key"
-> 5. 复制生成的 Key，发给我
+> Steps:
+> 1. Open https://console.groq.com
+> 2. Sign up with a Google account or email
+> 3. Click "API Keys" on the left
+> 4. Click "Create API Key"
+> 5. Copy the generated key and send it to me
 >
-> Groq 提供免费额度，日常使用完全够用。
+> Groq's free tier is plenty for everyday use.
 
-## Agent 收到 key 后的操作
+## After the Agent receives the key
 
-1. 写入配置：`config.set("groq_api_key", key)`
-2. 测试 API 可用性
-3. 反馈："✅ 语音转文字已开启！现在遇到没有字幕的视频，我也能帮你提取内容了。"
+1. Save it: `agent-reach configure groq-key` (hidden input)
+2. Test that the API works
+3. Report back: "✅ Speech-to-text is on! Now I can pull content from videos even when they have no subtitles."

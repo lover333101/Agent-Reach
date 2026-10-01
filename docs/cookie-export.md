@@ -19,10 +19,9 @@ Here's how to export cookies from your local computer — **fastest method first
 That's it! Your Agent will run:
 ```bash
 agent-reach configure twitter-cookies
-agent-reach configure xhs-cookies
 ```
 
-Both commands use a hidden prompt. For non-interactive automation, send the
+The command uses a hidden prompt. For non-interactive automation, send the
 same exported value through stdin and add `--stdin`; never place cookies in
 the process arguments.
 
@@ -31,19 +30,15 @@ check whether explicit credentials are present. Doctor does not run
 `twitter status`. Direct `twitter` commands still require
 `TWITTER_AUTH_TOKEN` and `TWITTER_CT0` in their process environment.
 
-This XiaoHongShu export is for xiaohongshu-mcp or a legacy tool.
-`agent-reach configure xhs-cookies` does not inject cookies into OpenCLI or
-Chrome. OpenCLI may use only an existing Chrome session explicitly controlled
-by the user. Agent Reach never logs the user in or reads XiaoHongShu browser
-cookies.
+Agent Reach never logs the user in or reads browser cookie stores. OpenCLI
+may use only an existing Chrome session explicitly controlled by the user.
 
 ### Sites to export:
 
 | Site | URL to visit | What to tell Agent |
 |------|-------------|-------------------|
 | Twitter/X | https://x.com | "Here are my Twitter cookies: [paste]" |
-| XiaoHongShu | https://www.xiaohongshu.com | "Here are my XHS cookies: [paste]" |
-| Bilibili | https://www.bilibili.com | "Here are my Bilibili cookies: [paste]" |
+| Reddit | https://www.reddit.com | "Here is my reddit_session cookie: [paste]" (copy only the `reddit_session` value) |
 
 ## Method 2: Manual (No extension needed)
 

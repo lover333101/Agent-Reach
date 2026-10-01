@@ -5,12 +5,6 @@
 Copy this to your AI Agent:
 
 ```
-帮我更新 Agent Reach：https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/update.md
-```
-
-Or in English:
-
-```
 Update Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/update.md
 ```
 
@@ -32,7 +26,7 @@ Update Agent Reach to the latest version, refresh upstream tools, migrate from r
 agent-reach check-update
 ```
 
-If it says "已是最新版本", skip to Step 4 (verify). Otherwise continue.
+If it says "Already up to date", skip to Step 5 (verify). Otherwise continue.
 
 ### Step 2: Update Agent Reach package
 
@@ -54,8 +48,6 @@ exception: OpenCLI on desktop, see below).
 ```bash
 # Python-based CLIs the user already has (upgrade keeps signatures fresh)
 which twitter >/dev/null 2>&1 && { pipx upgrade twitter-cli 2>/dev/null || uv tool upgrade twitter-cli 2>/dev/null; }
-which bili    >/dev/null 2>&1 && { pipx upgrade bilibili-cli 2>/dev/null || uv tool upgrade bilibili-cli 2>/dev/null; }
-which xhs     >/dev/null 2>&1 && { pipx upgrade xiaohongshu-cli 2>/dev/null || uv tool upgrade xiaohongshu-cli 2>/dev/null; }
 which yt-dlp  >/dev/null 2>&1 && { pipx install --force 'yt-dlp[default]' 2>/dev/null || uv tool install --force 'yt-dlp[default]' 2>/dev/null || python -m pip install -U 'yt-dlp[default]' 2>/dev/null; }
 
 # rdt-cli is pinned to a git source (PyPI lags upstream) — same pin as the code's _RDT_GIT_SOURCE
@@ -66,24 +58,24 @@ which mcporter >/dev/null 2>&1 && npm update -g mcporter 2>/dev/null
 which opencli  >/dev/null 2>&1 && npm update -g @jackwener/opencli 2>/dev/null
 ```
 
-**Desktop users without OpenCLI**: since v1.5.0 OpenCLI is the preferred
-backend for 小红书/Reddit (and adds B站 subtitles). Offer it once. For
-小红书, OpenCLI may use only an existing Chrome session explicitly controlled
-by the user. The update must never log the user in or read browser cookies:
+**Desktop users without OpenCLI**: OpenCLI is the preferred backend for
+Reddit, Facebook and Instagram, and a fallback for Twitter. Offer it once.
+OpenCLI may use only an existing Chrome session explicitly controlled by the
+user. The update must never log the user in or read browser cookies:
 
-> "这次更新引入了 OpenCLI 后端。要装吗？装完只需你在 Chrome 商店点一次
-> 『添加扩展』。小红书 OpenCLI 只使用你已有的 Chrome 会话；如果没有现成
-> 会话，我不会自动登录，会改用 Cookie-Editor 配置 MCP / 存量工具。"
+> "This update can add the OpenCLI backend. Want it? After installing, you
+> only need to click 'Add extension' once in the Chrome Web Store. OpenCLI
+> only uses the Chrome sessions you already have; if you're not logged in
+> somewhere, I won't log in for you."
 
 If yes: `agent-reach install --system --channels opencli` and guide them through the
 extension click. If no, everything keeps working on existing backends.
 
 ### Step 4: Coexistence (DO NOT uninstall old tools)
 
-**Never uninstall tools the user already has.** Retired backends (e.g. yt-dlp
-no longer serves Bilibili; xhs-cli is no longer installed by default) keep
-working as fallbacks where they still function. Agent Reach routes around
-them automatically — removal is the user's call, not yours.
+**Never uninstall tools the user already has.** Retired backends keep working
+as fallbacks where they still function. Agent Reach routes around them
+automatically — removal is the user's call, not yours.
 
 ### Step 5: Verify
 
@@ -92,16 +84,14 @@ agent-reach version
 agent-reach doctor
 ```
 
-Running `agent-reach doctor` (text mode) also makes sure an Agent Reach skill
-exists in detected agent skill directories. If the user already has a skill
-there, doctor preserves it instead of overwriting local customizations. Use
-`agent-reach skill --install` when you explicitly want to refresh the bundled
-skill files.
+`agent-reach doctor` is read-only: it never installs or rewrites the skill.
+Run `agent-reach skill --install` when you explicitly want to refresh the
+bundled skill files.
 
 Check the doctor output:
 
 - Every channel shows ✅ / [!] with a clear message, and multi-backend
-  channels (小红书/Reddit/B站/Twitter) report `当前后端：…`
+  channels (Reddit/Twitter) report `(active backend: …)`
 - If a previously-working channel now shows [X]/error, the message contains
   the exact fix (e.g. a venv-reinstall prescription) — run it, then re-check
 - `--json` gives the same data machine-readably (`active_backend` per channel)
@@ -114,7 +104,7 @@ Tell the user:
 2. How many channels are available, and which backend each multi-backend
    platform is using (from doctor)
 3. Anything that needs their action (e.g. a Chrome extension click, or a
-   manual Cookie-Editor export when XiaoHongShu uses MCP / a legacy tool)
+   manual Cookie-Editor export for Twitter)
 4. What changed in this update (release notes shown by `check-update`)
 
 Done.

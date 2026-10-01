@@ -41,10 +41,10 @@ class TestDoctor:
             doctor,
             "get_all_channels",
             lambda: [
-                _StubChannel("web", "网页", 0, "ok", "可抓取网页", ["requests"],
+                _StubChannel("web", "Web page", 0, "ok", "Can fetch web pages", ["requests"],
                              active_backend="requests"),
-                _StubChannel("github", "GitHub", 0, "warn", "gh 未安装", ["gh"]),
-                _StubChannel("exa_search", "全网语义搜索", 1, "off", "mcporter 未配置", ["Exa"]),
+                _StubChannel("github", "GitHub", 0, "warn", "gh not installed", ["gh"]),
+                _StubChannel("exa_search", "Web-wide semantic search", 1, "off", "mcporter not configured", ["Exa"]),
             ],
         )
 
@@ -53,8 +53,8 @@ class TestDoctor:
         assert results == {
             "web": {
                 "status": "ok",
-                "name": "网页",
-                "message": "可抓取网页",
+                "name": "Web page",
+                "message": "Can fetch web pages",
                 "tier": 0,
                 "backends": ["requests"],
                 "active_backend": "requests",
@@ -62,15 +62,15 @@ class TestDoctor:
             "github": {
                 "status": "warn",
                 "name": "GitHub",
-                "message": "gh 未安装",
+                "message": "gh not installed",
                 "tier": 0,
                 "backends": ["gh"],
                 "active_backend": None,
             },
             "exa_search": {
                 "status": "off",
-                "name": "全网语义搜索",
-                "message": "mcporter 未配置",
+                "name": "Web-wide semantic search",
+                "message": "mcporter not configured",
                 "tier": 1,
                 "backends": ["Exa"],
                 "active_backend": None,
@@ -82,22 +82,22 @@ class TestDoctor:
             {
                 "web": {
                     "status": "ok",
-                    "name": "网页",
-                    "message": "可抓取网页",
+                    "name": "Web page",
+                    "message": "Can fetch web pages",
                     "tier": 0,
                     "backends": ["requests"],
                 },
                 "exa_search": {
                     "status": "off",
-                    "name": "全网语义搜索",
-                    "message": "mcporter 未配置",
+                    "name": "Web-wide semantic search",
+                    "message": "mcporter not configured",
                     "tier": 1,
                     "backends": ["Exa"],
                 },
-                "xiaohongshu": {
+                "linkedin": {
                     "status": "warn",
-                    "name": "小红书",
-                    "message": "MCP 已配置，但健康检查超时",
+                    "name": "LinkedIn",
+                    "message": "MCP configured, but the health check timed out",
                     "tier": 2,
                     "backends": ["mcporter"],
                 },
@@ -108,22 +108,22 @@ class TestDoctor:
         import re
         plain = re.sub(r"\[[^\]]*\]", "", report)
         assert "Agent Reach" in plain
-        assert "装好即用：" in plain
-        assert "1/3 个渠道可用" in plain
+        assert "Ready out of the box:" in plain
+        assert "1/3 channels available" in plain
         # Inactive optional channels should be summarized in one line
-        assert "可选渠道可以解锁" in plain
+        assert "optional channels can be unlocked" in plain
 
 
 def test_stale_active_backend_does_not_leak_into_errored_result(monkeypatch):
-    """渠道单例上一轮的 active_backend 不得泄漏进本轮异常结果(Codex review 发现)。"""
+    """A channel singleton's active_backend from the last run must not leak into this run's error result (found in Codex review)."""
     from agent_reach import doctor
 
     class _ExplodingChannel:
         name = "boom"
-        description = "爆炸渠道"
+        description = "Exploding channel"
         tier = 0
         backends = ["a", "b"]
-        active_backend = "a"  # 上一轮成功的残留
+        active_backend = "a"  # leftover from a previous successful run
 
         def check(self, config=None):
             raise RuntimeError("boom")
@@ -139,7 +139,7 @@ def test_channel_exception_credentials_are_scrubbed(monkeypatch):
 
     class _ExplodingChannel:
         name = "secret"
-        description = "敏感渠道"
+        description = "Sensitive channel"
         tier = 0
         backends = ["secret-backend"]
         active_backend = None
@@ -164,7 +164,7 @@ def test_channel_success_message_credentials_are_scrubbed(monkeypatch):
     """Expected channel messages must pass through the same trust boundary."""
     channel = _StubChannel(
         "configured",
-        "已配置渠道",
+        "Configured channel",
         0,
         "warn",
         (
@@ -223,10 +223,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
 ):
     """Run the real Doctor collector with deterministic external probes."""
     import agent_reach.backends.opencli as opencli
-    import agent_reach.channels.bilibili as bilibili
-    import agent_reach.channels.v2ex as v2ex
-    import agent_reach.channels.xiaohongshu as xiaohongshu
-    import agent_reach.channels.xueqiu as xueqiu
     from agent_reach import cli
 
     workdir = tmp_path / "empty-workdir"
@@ -240,12 +236,10 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
         "gh",
         "opencli",
         "yt-dlp",
-        "bili",
         "ffmpeg",
         "mcporter",
         "twitter",
         "rdt",
-        "xhs",
         "deno",
         "node",
     }
@@ -277,8 +271,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
             output = "1.8.6"
         elif name == "yt-dlp":
             output = "2026.01.01"
-        elif name == "bili":
-            output = "0.3.0"
         elif name == "ffmpeg":
             output = "ffmpeg version 7.0"
         else:
@@ -290,18 +282,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
     monkeypatch.setattr(opencli, "_extension_installed_on_disk", lambda: False)
     monkeypatch.setattr(
         opencli, "_unpacked_extension_files_present", lambda: False
-    )
-    monkeypatch.setattr(bilibili, "_search_api_ok", lambda: False)
-    monkeypatch.setattr(
-        xiaohongshu, "_mcp_service_reachable", lambda timeout=3: False
-    )
-    monkeypatch.setattr(v2ex, "_get_json", lambda _url: [])
-    monkeypatch.setattr(
-        xueqiu,
-        "_get_json",
-        lambda _url, _config=None: {
-            "data": {"quote": {"symbol": "SH601138"}}
-        },
     )
 
     before = _snapshot_user_roots()
@@ -319,7 +299,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
         "reddit",
         "facebook",
         "instagram",
-        "xiaohongshu",
     ):
         assert payload[channel_name]["status"] == "warn"
         assert payload[channel_name]["active_backend"] is None

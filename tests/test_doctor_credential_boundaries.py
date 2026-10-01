@@ -8,7 +8,6 @@ import time
 
 from agent_reach.channels.reddit import RedditChannel
 from agent_reach.channels.twitter import TwitterChannel
-from agent_reach.channels.xiaohongshu import XiaoHongShuChannel
 
 
 def _forbid_subprocess(*_args, **_kwargs):
@@ -32,7 +31,7 @@ def test_twitter_doctor_does_not_start_cli_without_explicit_credentials(
     assert status == "warn"
     assert channel.active_backend is None
     assert "Cookie-Editor" in message
-    assert "浏览器" not in message or "不会" in message
+    assert "browser" not in message.lower() or "never" in message
 
 
 def test_twitter_doctor_still_avoids_upstream_fallback_with_saved_credentials(
@@ -54,8 +53,8 @@ def test_twitter_doctor_still_avoids_upstream_fallback_with_saved_credentials(
     status, message = TwitterChannel().check(Config())
 
     assert status == "warn"
-    assert "已配置" in message
-    assert "不会执行" in message
+    assert "configured" in message
+    assert "will not run" in message
 
 
 def test_reddit_doctor_does_not_create_or_refresh_missing_credentials(
@@ -102,71 +101,7 @@ def test_reddit_doctor_reports_stale_saved_credential_without_refresh(
     status, message = RedditChannel().check()
 
     assert status == "warn"
-    assert "超过 7 天" in message
+    assert "older than 7 days" in message
     assert credential_path.read_bytes() == original
 
 
-def test_xhs_doctor_does_not_create_or_extract_missing_cookies(
-    isolated_home, monkeypatch
-):
-    monkeypatch.setattr(
-        "shutil.which",
-        lambda name: "/usr/local/bin/xhs" if name == "xhs" else None,
-    )
-    monkeypatch.setattr(subprocess, "run", _forbid_subprocess)
-    monkeypatch.setattr(
-        XiaoHongShuChannel,
-        "_check_opencli",
-        lambda self: None,
-    )
-    monkeypatch.setattr(
-        XiaoHongShuChannel,
-        "_check_mcp",
-        lambda self: None,
-    )
-
-    channel = XiaoHongShuChannel()
-    status, message = channel.check()
-
-    assert status == "warn"
-    assert channel.active_backend is None
-    assert "Cookie-Editor" in message
-    assert not (isolated_home / ".xiaohongshu-cli").exists()
-
-
-def test_xhs_doctor_reports_stale_cookie_without_refresh(
-    isolated_home, monkeypatch
-):
-    cookie_path = isolated_home / ".xiaohongshu-cli" / "cookies.json"
-    cookie_path.parent.mkdir(parents=True)
-    cookie_path.write_text(
-        json.dumps(
-            {
-                "a1": "explicit-cookie",
-                "saved_at": time.time() - 8 * 86400,
-            }
-        ),
-        encoding="utf-8",
-    )
-    original = cookie_path.read_bytes()
-    monkeypatch.setattr(
-        "shutil.which",
-        lambda name: "/usr/local/bin/xhs" if name == "xhs" else None,
-    )
-    monkeypatch.setattr(subprocess, "run", _forbid_subprocess)
-    monkeypatch.setattr(
-        XiaoHongShuChannel,
-        "_check_opencli",
-        lambda self: None,
-    )
-    monkeypatch.setattr(
-        XiaoHongShuChannel,
-        "_check_mcp",
-        lambda self: None,
-    )
-
-    status, message = XiaoHongShuChannel().check()
-
-    assert status == "warn"
-    assert "超过 7 天" in message
-    assert cookie_path.read_bytes() == original
