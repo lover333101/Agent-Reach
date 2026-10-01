@@ -5,12 +5,12 @@
 Copy this to your AI Agent:
 
 ```
-Install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+Install Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/install.md
 ```
 
 > 🛡️ **Safe by default:** `agent-reach install` only checks the machine and lists missing dependencies:
 > ```
-> Safely check and install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+> Safely check and install Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/install.md
 > ```
 > Only use `--system` after the user explicitly approves system-level installs and configuration writes.
 
@@ -50,7 +50,7 @@ All Agent Reach files go in dedicated directories — **never in the agent works
 
 ```bash
 # Recommended: pipx (least hassle)
-pipx install https://github.com/Panniantong/agent-reach/archive/main.zip
+pipx install https://github.com/lover333101/Agent-Reach/archive/main.zip
 agent-reach install --env=auto               # Read-only check (default)
 # After the user explicitly approves system changes:
 agent-reach install --env=auto --system
@@ -59,7 +59,7 @@ agent-reach install --env=auto --system
 # install into a virtual environment:
 python3 -m venv ~/.agent-reach-venv
 source ~/.agent-reach-venv/bin/activate
-pip install https://github.com/Panniantong/agent-reach/archive/main.zip
+pip install https://github.com/lover333101/Agent-Reach/archive/main.zip
 agent-reach install --env=auto               # Read-only check (default)
 # After the user explicitly approves system changes:
 agent-reach install --env=auto --system
@@ -75,7 +75,7 @@ agent-reach install --env=auto --system
 > ```powershell
 > py -3 -m venv $env:USERPROFILE\.agent-reach-venv
 > $env:USERPROFILE\.agent-reach-venv\Scripts\Activate.ps1
-> python -m pip install https://github.com/Panniantong/agent-reach/archive/main.zip
+> python -m pip install https://github.com/lover333101/Agent-Reach/archive/main.zip
 > agent-reach install --env=auto
 > ```
 
@@ -278,7 +278,7 @@ If the user agrees, create a **cron job** (daily, `sessionTarget: "isolated"`, `
 Run the agent-reach watch command.
 If the output contains "all good", do not notify the user; finish silently.
 If the output lists problems ([X] or [!]) or "New version available", send the full report to the user with suggested fixes.
-If a new version is available, ask the user whether to upgrade (sending this one line to the user's Agent performs a full update: Update Agent Reach for me: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/update.md).
+If a new version is available, ask the user whether to upgrade (sending this one line to the user's Agent performs a full update: Update Agent Reach for me: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/update.md).
 ```
 
 If the user wants a different agent to handle it, let them choose.

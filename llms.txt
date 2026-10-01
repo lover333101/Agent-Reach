@@ -4,12 +4,12 @@
 
 ## Quick Start
 
-- [Installation Guide](https://github.com/Panniantong/Agent-Reach/blob/main/docs/install.md): Step-by-step setup instructions for AI agents
-- [README](https://github.com/Panniantong/Agent-Reach/blob/main/README.md): Full documentation
+- [Installation Guide](https://github.com/lover333101/Agent-Reach/blob/main/docs/install.md): Step-by-step setup instructions for AI agents
+- [README](https://github.com/lover333101/Agent-Reach/blob/main/README.md): Full documentation
 
 ## Core Commands
 
-- [CLI Usage](https://github.com/Panniantong/Agent-Reach/blob/main/docs/install.md): `agent-reach doctor --json` shows the active backend; agents then call upstream tools directly (`opencli`, `twitter`, `rdt`, `yt-dlp`, `gh`, `mcporter`, etc.).
+- [CLI Usage](https://github.com/lover333101/Agent-Reach/blob/main/docs/install.md): `agent-reach doctor --json` shows the active backend; agents then call upstream tools directly (`opencli`, `twitter`, `rdt`, `yt-dlp`, `gh`, `mcporter`, etc.).
 
 ## Key Features
 
@@ -24,9 +24,9 @@
 
 ## Troubleshooting
 
-- [Troubleshooting Guide](https://github.com/Panniantong/Agent-Reach/blob/main/docs/troubleshooting.md): Common issues and solutions
+- [Troubleshooting Guide](https://github.com/lover333101/Agent-Reach/blob/main/docs/troubleshooting.md): Common issues and solutions
 
 ## Optional
 
-- [SKILL.md](https://github.com/Panniantong/Agent-Reach/blob/main/agent_reach/skill/SKILL.md): Integration guide for AI agent frameworks (OpenClaw, Claude Code, etc.)
-- Package install: `pip install https://github.com/Panniantong/agent-reach/archive/main.zip` (the `agent-reach` name on PyPI belongs to an unrelated project)
+- [SKILL.md](https://github.com/lover333101/Agent-Reach/blob/main/agent_reach/skill/SKILL.md): Integration guide for AI agent frameworks (OpenClaw, Claude Code, etc.)
+- Package install: `pip install https://github.com/lover333101/Agent-Reach/archive/main.zip` (the `agent-reach` name on PyPI belongs to an unrelated project)
