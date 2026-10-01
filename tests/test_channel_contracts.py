@@ -49,7 +49,7 @@ def test_channel_active_backend_set_by_check(monkeypatch, tmp_path):
     """After check(), active_backend is None or a str — never anything else."""
     monkeypatch.setattr("shutil.which", lambda _cmd: None)
 
-    # Keep the network-based channels (V2EX/Xueqiu/Bilibili API) deterministic.
+    # Keep any network-based check deterministic.
     import urllib.request
     from urllib.error import URLError
 
@@ -57,9 +57,6 @@ def test_channel_active_backend_set_by_check(monkeypatch, tmp_path):
         raise URLError("offline")
 
     monkeypatch.setattr(urllib.request, "urlopen", _no_net)
-    import agent_reach.channels.xueqiu as xueqiu_mod
-    monkeypatch.setattr(xueqiu_mod, "_cookies_initialized", True)
-    monkeypatch.setattr(xueqiu_mod._opener, "open", _no_net)
 
     config = Config(config_path=tmp_path / "config.yaml")
     for ch in get_all_channels():

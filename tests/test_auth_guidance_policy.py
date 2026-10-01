@@ -54,23 +54,6 @@ def test_xiaohongshu_guidance_never_starts_implicit_login():
     assert not violations, "\n".join(violations)
 
 
-def test_xiaohongshu_opencli_and_export_boundaries_are_truthful():
-    """Cookie import is for MCP/legacy tools, never OpenCLI or Chrome."""
-    boundary_docs = (
-        ROOT / "docs" / "install.md",
-        ROOT / "agent_reach" / "guides" / "setup-xiaohongshu.md",
-        ROOT / "agent_reach" / "skill" / "references" / "social.md",
-    )
-    for path in boundary_docs:
-        text = path.read_text(encoding="utf-8")
-        assert "已经存在且明确控制" in text, path.relative_to(ROOT)
-        assert "不会把 Cookie 注入 OpenCLI" in text, path.relative_to(ROOT)
-
-    xhs_guide = boundary_docs[1].read_text(encoding="utf-8")
-    assert "xiaohongshu.com 同域 Cookie 集" in xhs_guide
-    assert "非 xiaohongshu.com 域 Cookie" in xhs_guide
-
-
 def test_twitter_operational_docs_explain_the_environment_boundary():
     """Saved cookies help doctor only; direct twitter commands need env vars."""
     operational_docs = (
@@ -218,18 +201,12 @@ def test_video_reference_has_content_level_youtube_fallbacks():
     assert "agent-reach transcribe" in text
 
 
-def test_skill_routes_finance_and_documents_opencli_discovery():
+def test_skill_documents_opencli_discovery():
     skills = (
         ROOT / "agent_reach" / "skill" / "SKILL.md",
         ROOT / "agent_reach" / "skill" / "SKILL_en.md",
     )
     for path in skills:
         text = path.read_text(encoding="utf-8")
-        assert "references/finance.md" in text, path.relative_to(ROOT)
         assert "opencli list" in text, path.relative_to(ROOT)
         assert "--help" in text, path.relative_to(ROOT)
-
-    finance = ROOT / "agent_reach" / "skill" / "references" / "finance.md"
-    text = finance.read_text(encoding="utf-8")
-    assert "opencli xueqiu stock" in text
-    assert "agent-reach configure --from-browser chrome --platform xueqiu" in text

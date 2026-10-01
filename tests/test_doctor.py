@@ -223,10 +223,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
 ):
     """Run the real Doctor collector with deterministic external probes."""
     import agent_reach.backends.opencli as opencli
-    import agent_reach.channels.bilibili as bilibili
-    import agent_reach.channels.v2ex as v2ex
-    import agent_reach.channels.xiaohongshu as xiaohongshu
-    import agent_reach.channels.xueqiu as xueqiu
     from agent_reach import cli
 
     workdir = tmp_path / "empty-workdir"
@@ -240,12 +236,10 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
         "gh",
         "opencli",
         "yt-dlp",
-        "bili",
         "ffmpeg",
         "mcporter",
         "twitter",
         "rdt",
-        "xhs",
         "deno",
         "node",
     }
@@ -277,8 +271,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
             output = "1.8.6"
         elif name == "yt-dlp":
             output = "2026.01.01"
-        elif name == "bili":
-            output = "0.3.0"
         elif name == "ffmpeg":
             output = "ffmpeg version 7.0"
         else:
@@ -290,18 +282,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
     monkeypatch.setattr(opencli, "_extension_installed_on_disk", lambda: False)
     monkeypatch.setattr(
         opencli, "_unpacked_extension_files_present", lambda: False
-    )
-    monkeypatch.setattr(bilibili, "_search_api_ok", lambda: False)
-    monkeypatch.setattr(
-        xiaohongshu, "_mcp_service_reachable", lambda timeout=3: False
-    )
-    monkeypatch.setattr(v2ex, "_get_json", lambda _url: [])
-    monkeypatch.setattr(
-        xueqiu,
-        "_get_json",
-        lambda _url, _config=None: {
-            "data": {"quote": {"symbol": "SH601138"}}
-        },
     )
 
     before = _snapshot_user_roots()
@@ -319,7 +299,6 @@ def test_real_doctor_path_is_zero_write_and_never_runs_risky_status_commands(
         "reddit",
         "facebook",
         "instagram",
-        "xiaohongshu",
     ):
         assert payload[channel_name]["status"] == "warn"
         assert payload[channel_name]["active_backend"] is None
