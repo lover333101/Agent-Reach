@@ -16,15 +16,14 @@ from agent_reach.cli import _cmd_skill, _install_skill, _uninstall_skill
 class TestSkillCommand(unittest.TestCase):
     """Test skill install and uninstall via CLI helpers."""
 
-    def test_skill_resources_include_both_locales(self):
-        """Package resources should expose both default and English skill markdown files."""
+    def test_skill_resources_ship_a_single_english_skill(self):
+        """Package resources expose one English SKILL.md and no locale variants."""
         skill_dir = importlib.resources.files("agent_reach").joinpath("skill")
 
-        default_skill = skill_dir.joinpath("SKILL.md").read_text(encoding="utf-8")
-        english_skill = skill_dir.joinpath("SKILL_en.md").read_text(encoding="utf-8")
+        skill = skill_dir.joinpath("SKILL.md").read_text(encoding="utf-8")
 
-        self.assertTrue(default_skill.strip())
-        self.assertTrue(english_skill.strip())
+        self.assertTrue(skill.strip())
+        self.assertFalse(skill_dir.joinpath("SKILL_en.md").is_file())
 
     def test_exa_reference_uses_default_registered_tools_only(self):
         """Agent instructions must not call Exa tools disabled by default."""
@@ -70,7 +69,7 @@ class TestSkillCommand(unittest.TestCase):
         )
         self.assertIn(
             'linkedin.search_people keywords="AI engineer" '
-            'location="Shanghai"',
+            'location="San Francisco"',
             career_reference,
         )
         self.assertIn(
@@ -108,36 +107,6 @@ class TestSkillCommand(unittest.TestCase):
         self.assertNotIn("localhost:3000/mcp", linkedin_section)
         self.assertNotIn("linkedin-scraper.", linkedin_section)
         self.assertNotIn("--transport streamable-http", linkedin_section)
-
-    def test_boss_setup_is_agent_driven_and_reproducible(self):
-        root = Path(__file__).resolve().parents[1]
-        install_doc = (root / "docs" / "install.md").read_text(encoding="utf-8")
-        skill = (root / "agent_reach" / "skill" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        career = (
-            root / "agent_reach" / "skill" / "references" / "career.md"
-        ).read_text(encoding="utf-8")
-        readme = (root / "README.md").read_text(encoding="utf-8")
-
-        for content in (install_doc, skill, readme):
-            self.assertIn("帮我配 Boss直聘", content)
-        self.assertIn("agent-reach install --env=local --system --channels=boss", install_doc)
-        self.assertIn("--remote-debugging-address=127.0.0.1", install_doc)
-        self.assertIn("用户手动登录", install_doc)
-        self.assertIn("完全控制", install_doc)
-
-        self.assertIn(
-            'auth = AuthManager(Path.home() / ".boss-agent")', career
-        )
-        self.assertIn('browser_source="existing-browser"', career)
-        self.assertIn("job_card_browser", career)
-        self.assertIn("4c991b77086a203173bf08a4cb64a23af6514fe6", career)
-        self.assertIn("ENVIRONMENT_RISK", career)
-        self.assertIn("--browser-source existing-browser", career)
-        self.assertIn("长期复用", career)
-        self.assertNotIn("code 37（TOKEN_REFRESH_FAILED）→ 重新登录", career)
-        self.assertNotIn("client = BossClient(auth", career)
 
     def test_localized_readmes_use_current_linkedin_server_name(self):
         root = Path(__file__).resolve().parents[1]
@@ -223,8 +192,8 @@ class TestSkillCommand(unittest.TestCase):
                 content = f.read()
             self.assertIn("Agent Reach", content)
 
-    def test_install_uses_english_skill_for_english_locale(self):
-        """_install_skill should install the English skill file for English locales."""
+    def test_install_ignores_locale_and_lists_only_shipped_platforms(self):
+        """The installed skill is the same English file regardless of locale."""
         with tempfile.TemporaryDirectory() as tmpdir:
             skill_parent = os.path.join(tmpdir, ".openclaw", "skills")
             os.makedirs(skill_parent)
@@ -235,7 +204,7 @@ class TestSkillCommand(unittest.TestCase):
             ):
                 env = os.environ.copy()
                 env.pop("OPENCLAW_HOME", None)
-                env["LANG"] = "en_US.UTF-8"
+                env["LANG"] = "zh_CN.UTF-8"
                 with patch.dict(os.environ, env, clear=True):
                     _install_skill()
 
@@ -244,11 +213,12 @@ class TestSkillCommand(unittest.TestCase):
             with open(target, encoding="utf-8") as f:
                 content = f.read()
             self.assertTrue(content.strip())
-            self.assertIn("Xiaoyuzhou Podcast, LinkedIn", content)
-            self.assertNotIn("搜推特", content)
-            self.assertTrue(
-                os.path.exists(os.path.join(skill_parent, "agent-reach", "references"))
-            )
+            self.assertIn("LinkedIn/jobs/recruiting", content)
+            for retired in ("XiaoHongShu", "Bilibili", "Xueqiu", "V2EX", "Xiaoyuzhou", "Boss"):
+                self.assertNotIn(retired, content)
+            references = os.path.join(skill_parent, "agent-reach", "references")
+            self.assertTrue(os.path.exists(references))
+            self.assertFalse(os.path.exists(os.path.join(references, "finance.md")))
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ def _frontmatter(resource_name: str) -> dict[str, object]:
 
 
 def test_skill_frontmatter_uses_opencode_supported_fields():
-    """Both locale variants must follow OpenCode's documented schema."""
+    """The packaged skill must follow OpenCode's documented schema."""
     allowed_fields = {
         "name",
         "description",
@@ -36,7 +36,7 @@ def test_skill_frontmatter_uses_opencode_supported_fields():
         "metadata",
     }
 
-    for resource_name in ("SKILL.md", "SKILL_en.md"):
+    for resource_name in ("SKILL.md",):
         frontmatter = _frontmatter(resource_name)
         assert set(frontmatter) <= allowed_fields, resource_name
         assert frontmatter["name"] == "agent-reach", resource_name

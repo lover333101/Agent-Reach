@@ -416,30 +416,11 @@ def _install_skill(force: bool = True):
     import os
     import shutil
 
-    def _is_english_locale(value: str) -> bool:
-        normalized = value.strip().lower()
-        return normalized.startswith("en") or normalized.startswith("english")
-
-    def _skill_resource_name() -> str:
-        locale_candidates = (
-            os.environ.get("AGENT_REACH_LANG", ""),
-            os.environ.get("LC_ALL", ""),
-            os.environ.get("LC_MESSAGES", ""),
-            os.environ.get("LANG", ""),
-        )
-        if any(_is_english_locale(candidate) for candidate in locale_candidates):
-            return "SKILL_en.md"
-        return "SKILL.md"
-
     def _read_skill_markdown(skill_pkg):
-        resource_name = _skill_resource_name()
-        try:
-            return skill_pkg.joinpath(resource_name).read_text(encoding="utf-8")
-        except FileNotFoundError:
-            return skill_pkg.joinpath("SKILL.md").read_text(encoding="utf-8")
+        return skill_pkg.joinpath("SKILL.md").read_text(encoding="utf-8")
 
     def _copy_skill_dir(target: str) -> str | None:
-        """Copy entire skill directory (locale-specific SKILL.md + references/)."""
+        """Copy entire skill directory (SKILL.md + references/)."""
         try:
             if not force and os.path.exists(os.path.join(target, "SKILL.md")):
                 return "preserved"
@@ -461,7 +442,7 @@ def _install_skill(force: bool = True):
                 skill_pkg = Path(__file__).resolve().parent / "skill"
                 skill_md = _read_skill_markdown(skill_pkg)
 
-            # Copy SKILL.md using the selected locale file
+            # Copy SKILL.md
             with open(os.path.join(target, "SKILL.md"), "w", encoding="utf-8") as f:
                 f.write(skill_md)
 

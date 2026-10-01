@@ -66,7 +66,6 @@ def test_twitter_operational_docs_explain_the_environment_boundary():
         ROOT / "docs" / "troubleshooting.md",
         ROOT / "agent_reach" / "guides" / "setup-twitter.md",
         ROOT / "agent_reach" / "skill" / "SKILL.md",
-        ROOT / "agent_reach" / "skill" / "SKILL_en.md",
         ROOT / "agent_reach" / "skill" / "references" / "social.md",
     )
 
@@ -183,7 +182,6 @@ def test_skill_explains_unverified_backend_state():
     """A null backend is an explicit safety state, not a routing instruction."""
     skills = (
         ROOT / "agent_reach" / "skill" / "SKILL.md",
-        ROOT / "agent_reach" / "skill" / "SKILL_en.md",
     )
     for path in skills:
         text = path.read_text(encoding="utf-8")
@@ -197,14 +195,13 @@ def test_video_reference_has_content_level_youtube_fallbacks():
         ROOT / "agent_reach" / "skill" / "references" / "video.md"
     ).read_text(encoding="utf-8")
     assert "opencli youtube transcript" in text
-    assert "最多重试 3 次" in text
+    assert "retry up to 3" in text
     assert "agent-reach transcribe" in text
 
 
 def test_skill_documents_opencli_discovery():
     skills = (
         ROOT / "agent_reach" / "skill" / "SKILL.md",
-        ROOT / "agent_reach" / "skill" / "SKILL_en.md",
     )
     for path in skills:
         text = path.read_text(encoding="utf-8")
