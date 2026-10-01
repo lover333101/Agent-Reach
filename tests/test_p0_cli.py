@@ -1008,7 +1008,7 @@ def test_uninstall_preserves_mcporter_entries_without_agent_reach_provenance(
                 "baseUrl": "https://mcp.exa.ai/mcp",
             },
             {
-                "name": "xiaohongshu",
+                "name": "other-server",
                 "source": {
                     "kind": "local",
                     "path": str(isolated_home / ".mcporter" / "mcporter.json"),

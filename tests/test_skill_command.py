@@ -108,10 +108,10 @@ class TestSkillCommand(unittest.TestCase):
         self.assertNotIn("linkedin-scraper.", linkedin_section)
         self.assertNotIn("--transport streamable-http", linkedin_section)
 
-    def test_localized_readmes_use_current_linkedin_server_name(self):
+    def test_readme_uses_current_linkedin_server_name(self):
         root = Path(__file__).resolve().parents[1]
-        for name in ("README_ja.md", "README_ko.md"):
-            content = (root / "docs" / name).read_text(encoding="utf-8")
+        for path in (root / "README.md", root / "docs" / "install.md"):
+            content = path.read_text(encoding="utf-8")
             self.assertIn("mcp-server-linkedin", content)
             self.assertNotIn("linkedin-scraper-mcp", content)
 

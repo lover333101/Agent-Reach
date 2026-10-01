@@ -94,7 +94,7 @@ class TestDoctor:
                     "tier": 1,
                     "backends": ["Exa"],
                 },
-                "xiaohongshu": {
+                "linkedin": {
                     "status": "warn",
                     "name": "LinkedIn",
                     "message": "MCP configured, but the health check timed out",

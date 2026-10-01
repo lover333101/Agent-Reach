@@ -19,37 +19,25 @@ def _policy_documents() -> list[Path]:
     return sorted(set(documents))
 
 
-def test_xiaohongshu_guidance_never_starts_implicit_login():
+def test_guidance_never_starts_implicit_login():
     """Do not reintroduce QR or automatic browser-cookie login guidance."""
-    xhs_markers = ("xiaohongshu", "小红书", "小紅書", "xhs")
-    legacy_auth_markers = (
-        "扫码",
-        "二维码",
+    forbidden = (
         "qr login",
         "qr scan",
         "qrcode",
-        "ブラウザからcookieを自動抽出",
-        "브라우저에서 cookie 자동 추출",
-    )
-    forbidden_commands = (
+        "scan the qr",
         "xhs " + "login",
         "get_login_" + "qrcode",
+        "--from-" + "browser",
+        "browser-" + "cookie3",
     )
 
     violations = []
     for path in _policy_documents():
-        text = path.read_text(encoding="utf-8")
-        lowered = text.lower()
-        for command in forbidden_commands:
-            if command in lowered:
-                violations.append(f"{path.relative_to(ROOT)}: {command}")
-        for line_number, line in enumerate(lowered.splitlines(), 1):
-            if not any(marker in line for marker in xhs_markers):
-                continue
-            if any(marker in line for marker in legacy_auth_markers):
-                violations.append(
-                    f"{path.relative_to(ROOT)}:{line_number}: {line.strip()}"
-                )
+        lowered = path.read_text(encoding="utf-8").lower()
+        for marker in forbidden:
+            if marker in lowered:
+                violations.append(f"{path.relative_to(ROOT)}: {marker}")
 
     assert not violations, "\n".join(violations)
 
@@ -58,9 +46,6 @@ def test_twitter_operational_docs_explain_the_environment_boundary():
     """Saved cookies help doctor only; direct twitter commands need env vars."""
     operational_docs = (
         ROOT / "README.md",
-        ROOT / "docs" / "README_en.md",
-        ROOT / "docs" / "README_ja.md",
-        ROOT / "docs" / "README_ko.md",
         ROOT / "docs" / "cookie-export.md",
         ROOT / "docs" / "install.md",
         ROOT / "docs" / "troubleshooting.md",
@@ -77,11 +62,11 @@ def test_twitter_operational_docs_explain_the_environment_boundary():
     twitter_guide = (
         ROOT / "agent_reach" / "guides" / "setup-twitter.md"
     ).read_text(encoding="utf-8")
-    assert "不会执行 `twitter status`" in twitter_guide
-    assert "不会修改当前 Shell" in twitter_guide
+    assert "will not run `twitter status`" in twitter_guide
+    assert "does not modify the current shell" in twitter_guide
     assert "Export → Header String" in twitter_guide
     assert "cookie JSON" not in twitter_guide
-    assert "复制全部" not in twitter_guide
+    assert "copy all" not in twitter_guide.lower()
 
     for expected in (
         "--sync-legacy-twitter",
@@ -90,51 +75,44 @@ def test_twitter_operational_docs_explain_the_environment_boundary():
         "~/.config/bird/credentials.env",
     ):
         assert expected in twitter_guide
-    assert "默认只写" in twitter_guide
-    assert "不会自动删除" in twitter_guide
+    assert "By default it only writes" in twitter_guide
+    assert "never deletes" in twitter_guide
 
-    rendered_as_verified = (
-        "✅ Twitter/X tweets",
-        "✅ Twitter/Xツイート",
-        "✅ Twitter/X 트윗",
-    )
+    rendered_as_verified = ("✅ Twitter/X tweets", "✅ Twitter/X posts")
     all_text = "\n".join(
         path.read_text(encoding="utf-8") for path in _policy_documents()
     )
     assert not any(claim in all_text for claim in rendered_as_verified)
 
 
-def test_localized_readmes_keep_current_bilibili_and_xhs_routes():
-    """Translations must not revive retired yt-dlp/Bilibili or XHS defaults."""
-    readmes = (
-        ROOT / "README.md",
-        ROOT / "docs" / "README_en.md",
-        ROOT / "docs" / "README_ja.md",
-        ROOT / "docs" / "README_ko.md",
+def test_docs_do_not_advertise_removed_channels():
+    """User-facing docs must match the channels shipped by the CLI."""
+    documents = _policy_documents() + [ROOT / "llms.txt"]
+    retired = (
+        "xiaohongshu",
+        "bilibili",
+        "bili-cli",
+        "xueqiu",
+        "v2ex",
+        "xiaoyuzhou",
+        "zhipin",
+        "boss-agent-cli",
+        "xhs-cookies",
     )
+    violations = []
+    for path in documents:
+        lowered = path.read_text(encoding="utf-8").lower()
+        for marker in retired:
+            if marker in lowered:
+                violations.append(f"{path.relative_to(ROOT)}: {marker}")
 
-    for path in readmes:
-        text = path.read_text(encoding="utf-8")
-        assert "bilibili.py     → yt-dlp" not in text, path.relative_to(ROOT)
-        assert "YouTube + Bilibili" not in text, path.relative_to(ROOT)
-        assert "bili-cli" in text, path.relative_to(ROOT)
-        assert (
-            "xiaohongshu.py  → OpenCLI ▸ xiaohongshu-mcp ▸ xhs-cli"
-            in text
-        ), path.relative_to(ROOT)
-
-
-def test_localized_readmes_do_not_advertise_retired_channels():
-    """Japanese and Korean docs must match the channels shipped by the CLI."""
-    for path in (ROOT / "docs" / "README_ja.md", ROOT / "docs" / "README_ko.md"):
-        text = path.read_text(encoding="utf-8").lower()
-        assert "douyin" not in text, path.relative_to(ROOT)
-        assert "weibo" not in text, path.relative_to(ROOT)
+    assert not violations, "\n".join(violations)
 
 
 def test_public_guidance_never_installs_the_unrelated_pypi_package():
     """The PyPI name is owned by another project; GitHub URLs are required."""
     candidates = _policy_documents() + [
+        ROOT / "llms.txt",
         ROOT / "agent_reach" / "integrations" / "mcp_server.py",
     ]
     bare_install = re.compile(
@@ -161,8 +139,6 @@ def test_public_guidance_never_puts_secrets_in_process_arguments():
     forbidden = (
         'agent-reach configure twitter-cookies "',
         "agent-reach configure twitter-cookies '",
-        'agent-reach configure xhs-cookies "',
-        "agent-reach configure xhs-cookies '",
         "agent-reach configure groq-key gsk_",
         "agent-reach configure openai-key sk-",
         "agent-reach configure github-token gh",
@@ -180,13 +156,9 @@ def test_public_guidance_never_puts_secrets_in_process_arguments():
 
 def test_skill_explains_unverified_backend_state():
     """A null backend is an explicit safety state, not a routing instruction."""
-    skills = (
-        ROOT / "agent_reach" / "skill" / "SKILL.md",
-    )
-    for path in skills:
-        text = path.read_text(encoding="utf-8")
-        assert "active_backend: null" in text, path.relative_to(ROOT)
-        assert "Doctor" in text, path.relative_to(ROOT)
+    text = (ROOT / "agent_reach" / "skill" / "SKILL.md").read_text(encoding="utf-8")
+    assert "active_backend: null" in text
+    assert "Doctor" in text
 
 
 def test_video_reference_has_content_level_youtube_fallbacks():
@@ -200,10 +172,6 @@ def test_video_reference_has_content_level_youtube_fallbacks():
 
 
 def test_skill_documents_opencli_discovery():
-    skills = (
-        ROOT / "agent_reach" / "skill" / "SKILL.md",
-    )
-    for path in skills:
-        text = path.read_text(encoding="utf-8")
-        assert "opencli list" in text, path.relative_to(ROOT)
-        assert "--help" in text, path.relative_to(ROOT)
+    text = (ROOT / "agent_reach" / "skill" / "SKILL.md").read_text(encoding="utf-8")
+    assert "opencli list" in text
+    assert "--help" in text
