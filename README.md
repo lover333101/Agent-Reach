@@ -23,6 +23,8 @@
   <a href="#quick-start">Quick Start</a> · <a href="#supported-platforms">Platforms</a> · <a href="#design-philosophy">Philosophy</a> · <a href="#security">Security</a>
 </p>
 
+> **English fork:** this is an English-only fork of [Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) with the China-only platforms removed. Install, update and issue links on this page point to this fork; installing from the original repository gives you the original Chinese version.
+
 > **No token or crypto affiliation:** Agent Reach has no official token, coin, investment product, fee-claim program, wallet connection, or Solana/Pump.fun project. Any crypto project using the Agent Reach name, GitHub URL, or author identity is not affiliated with this repository. Do not connect a wallet or claim fees based on messages, posts, or links that say otherwise.
 
 ---
@@ -74,7 +76,7 @@ AI Agents can already write code, edit docs and manage projects — but ask one 
 **Agent Reach turns this into one sentence:**
 
 ```
-Install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+Install Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/install.md
 ```
 
 Copy that to your Agent. A few minutes later, it can read tweets, search Reddit and pull YouTube transcripts.
@@ -82,7 +84,7 @@ Copy that to your Agent. A few minutes later, it can read tweets, search Reddit 
 **Already installed? Update in one sentence:**
 
 ```
-Update Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/update.md
+Update Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/update.md
 ```
 
 ### ✅ Before you start, you might want to know
@@ -136,19 +138,19 @@ Update Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/ma
 Copy this to your AI Agent (Claude Code, OpenClaw, Cursor, etc.):
 
 ```
-Install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+Install Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/install.md
 ```
 
 That's it. The Agent handles the rest.
 
 > 🔄 **Already installed?** Update in one sentence:
 > ```
-> Update Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/update.md
+> Update Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/update.md
 > ```
 
 > 🛡️ **Safe by default:** `agent-reach install` checks the machine without installing system packages or writing configuration:
 > ```
-> Safely check and install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+> Safely check and install Agent Reach: https://raw.githubusercontent.com/lover333101/Agent-Reach/main/docs/install.md
 > ```
 > Use `agent-reach install --system` only after explicitly approving system changes.
 
@@ -169,7 +171,7 @@ After installing, `agent-reach doctor` shows each channel's status and which pat
 <summary>Manual install</summary>
 
 ```bash
-pip install https://github.com/Panniantong/agent-reach/archive/main.zip
+pip install https://github.com/lover333101/Agent-Reach/archive/main.zip
 agent-reach install --env=auto
 ```
 </details>
@@ -178,7 +180,7 @@ agent-reach install --env=auto
 <summary>Install as a Skill (Claude Code / OpenClaw / any agent with Skills support)</summary>
 
 ```bash
-npx skills add Panniantong/Agent-Reach@agent-reach
+npx skills add lover333101/Agent-Reach@agent-reach
 ```
 
 After the Skill is installed, the Agent will auto-detect whether the `agent-reach` CLI is available and install it if needed.
@@ -359,7 +361,7 @@ For collaboration or questions, add me on WeChat — I'll invite you to the comm
   <img src="docs/wechat-group-qr.jpg" width="280" alt="WeChat QR">
 </p>
 
-> For bug reports and feature requests, please use [GitHub Issues](https://github.com/Panniantong/Agent-Reach/issues) — easier to track.
+> For bug reports and feature requests, please use [GitHub Issues](https://github.com/lover333101/Agent-Reach/issues) — easier to track.
 
 ## License
 
